@@ -261,10 +261,11 @@ Route::prefix('admin/setor_tarik')
     ->controller(SetorTarikController::class)
     ->group(function () {
         Route::get('/', 'read')->name('read');
+        Route::get('/filter/{bln}', 'read_filter')->name('read_filter');
         Route::get('/add', 'add')->name('add');
         Route::post('/create', 'create')->name('create');
         Route::get('/edit/{id}', 'edit')->name('edit');
         Route::post('/update/{id}', 'update')->name('update');
         Route::get('/hapus/{id}', 'hapus')->name('hapus');
         Route::get('/delete/{id}', 'delete')->name('delete');
-    });
+    }); 

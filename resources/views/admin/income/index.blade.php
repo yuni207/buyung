@@ -178,6 +178,43 @@
    </div>
 </div>
 
+{{-- ══════════════════════════════════════════════════════════════════════════
+     PERBAIKAN: Chart.js library + script topMenuChart DIPINDAH KE SINI,
+     di luar blok "@if(Auth::User()->level == '1')".
+     Sebelumnya kedua script ini terjebak di dalam blok admin-only,
+     padahal canvas <canvas id="topMenuChart"> ada di luar blok tersebut,
+     sehingga untuk user kasir (level != '1') canvas tampil tapi kosong
+     karena Chart.js tidak ter-load dan chart tidak pernah dibuat.
+     ══════════════════════════════════════════════════════════════════════════ --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+   const topMenuData = @json($topMenu);
+   const labels = topMenuData.map(item => item.nama);
+   const data = topMenuData.map(item => item.total_jumlah);
+
+   const ctx = document.getElementById('topMenuChart').getContext('2d');
+   new Chart(ctx, {
+       type: 'bar',
+       data: {
+           labels: labels,
+           datasets: [{
+               label: 'Total Pemesanan ',
+               data: data,
+               backgroundColor: 'rgba(75, 192, 192, 0.2)',
+               borderColor: 'rgba(75, 192, 192, 1)',
+               borderWidth: 1
+           }]
+       },
+       options: {
+           responsive: true,
+           scales: {
+               x: { beginAtZero: true },
+               y: { beginAtZero: true }
+           }
+       }
+   });
+</script>
+
 @if(Auth::User()->level == '1')
 
 {{-- ══ MODAL PEMASUKAN CASH ══════════════════════════════════════════════════ --}}
@@ -605,35 +642,7 @@
    </div>
 </div>
 
-{{-- ══ SCRIPT CHARTS ════════════════════════════════════════════════════════ --}}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-   const topMenuData = @json($topMenu);
-   const labels = topMenuData.map(item => item.nama);
-   const data = topMenuData.map(item => item.total_jumlah);
-
-   const ctx = document.getElementById('topMenuChart').getContext('2d');
-   new Chart(ctx, {
-       type: 'bar',
-       data: {
-           labels: labels,
-           datasets: [{
-               label: 'Total Pemesanan ',
-               data: data,
-               backgroundColor: 'rgba(75, 192, 192, 0.2)',
-               borderColor: 'rgba(75, 192, 192, 1)',
-               borderWidth: 1
-           }]
-       },
-       options: {
-           responsive: true,
-           scales: {
-               x: { beginAtZero: true },
-               y: { beginAtZero: true }
-           }
-       }
-   });
-</script>
+{{-- ══ SCRIPT CHARTS ADMIN-ONLY (topIncomeChart & topWeekChart) ═══════════════ --}}
 <script>
    document.addEventListener("DOMContentLoaded", function() {
        var topIncome = @json($topIncome);
