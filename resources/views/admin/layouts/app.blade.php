@@ -221,7 +221,6 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                         <a class="dropdown-item" href="/admin/change"><i class="dw dw-password"></i> Ganti Password</a>
-                        <a class="dropdown-item" href="#"><i class="dw dw-book"></i> Manual Book</a>
                         <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                   document.getElementById('logout-form').submit();"><i class="dw dw-logout"></i> Log Out</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
