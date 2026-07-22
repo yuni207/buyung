@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\HutangController;
 use App\Http\Controllers\Admin\PiutangController;
 use App\Http\Controllers\Admin\IncomeController;
+use App\Http\Controllers\Admin\LaporanKeuntunganController;
 use App\Http\Controllers\Admin\KasirController;
 use App\Http\Controllers\Admin\SetorTarikController;
 
@@ -164,6 +165,17 @@ Route::prefix('admin/pemasukan')
         Route::get('/cetak/{bln}', 'cetak')->name('cetak');
     });
 
+// Laporan Keuntungan
+Route::prefix('admin/laporan-keuntungan')
+    ->name('admin.laporan_keuntungan.')
+    ->middleware(['cekLevel:1 2', 'cekKasirBuka'])
+    ->controller(LaporanKeuntunganController::class)
+    ->group(function () {
+        Route::get('/', 'read')->name('read');
+        Route::get('/filter/{bln}', 'read_filter')->name('read_filter');
+        Route::get('/cetak/{bln}', 'cetak')->name('cetak');
+    });
+
 // Transaksi
 Route::prefix('admin/transaksi')
     ->name('admin.transaksi.')
@@ -197,6 +209,7 @@ Route::prefix('admin/hutang')
         Route::get('/detail/{id}', 'detail')->name('detail');
         Route::get('/delete/{id}', 'delete')->name('delete');
         Route::post('/bayar/{id}', 'bayar')->name('bayar');
+        Route::get('/cetak', 'cetak')->name('cetak');
     });
 
 // Piutang
@@ -211,6 +224,7 @@ Route::prefix('admin/piutang')
         Route::get('/detail/{id}', 'detail')->name('detail');
         Route::get('/delete/{id}', 'delete')->name('delete');
         Route::post('/bayar/{id}', 'bayar')->name('bayar');
+        Route::get('/cetak', 'cetak')->name('cetak');
     });
 
 // Income

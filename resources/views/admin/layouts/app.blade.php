@@ -356,6 +356,11 @@
                             <span class="micon dw dw-wallet"></span><span class="mtext">Data Pemasukan</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="/admin/laporan-keuntungan" class="dropdown-toggle no-arrow @if ($activePage == 'laporan_keuntungan') active @endif">
+                            <span class="micon dw dw-bar-chart-1"></span><span class="mtext">Laporan Keuntungan</span>
+                        </a>
+                    </li>
                     @endif
 
                     {{-- ══ MENU HUTANG (hanya owner & kasir) ══ --}}

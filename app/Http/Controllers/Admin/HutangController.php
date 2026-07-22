@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PDF;
 
 class HutangController extends Controller
 {
@@ -45,6 +46,67 @@ class HutangController extends Controller
         $totalLunas = $hutang->where('status', 'lunas')->sum('total');
 
         return view('admin.hutang.index', compact('hutang', 'totalSisa', 'totalLunas'));
+    }
+
+    // ── Cetak / download laporan hutang (PDF) ────────────────────────────────
+    public function cetak(Request $request)
+    {
+        $query = DB::table('hutang as h')
+            ->leftJoin('users as u', 'h.id_user', '=', 'u.id')
+            ->select(
+                'h.*',
+                'u.name as nama_kasir',
+                DB::raw('(h.total - h.terbayar) as sisa')
+            );
+
+        if ($request->filled('status')) {
+            $query->where('h.status', $request->status);
+        }
+
+        if ($request->filled('bln')) {
+            $query->where('h.tanggal', 'like', trim($request->bln) . '%');
+        }
+
+        if (Auth::user()->level != '1') {
+            $query->where('h.id_user', Auth::id());
+        }
+
+        $hutang           = $query->orderBy('h.id', 'DESC')->get();
+        $totalSisa        = $hutang->where('status', 'belum')->sum('sisa');
+        $totalLunas       = $hutang->where('status', 'lunas')->sum('total');
+        $totalKeseluruhan = $hutang->sum('total');
+        $label            = $this->buildLabel($request);
+
+        $pdf = PDF::loadview('admin.hutang.cetak', compact('hutang', 'totalSisa', 'totalLunas', 'totalKeseluruhan', 'label'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan Hutang ' . $label . '.pdf');
+    }
+
+    /**
+     * Membuat label periode/status untuk judul laporan berdasarkan
+     * query string yang sedang aktif (bln bisa YYYY / YYYY-MM / YYYY-MM-DD).
+     */
+    private function buildLabel(Request $request): string
+    {
+        $parts = [];
+
+        if ($request->filled('bln')) {
+            $bln = trim($request->bln);
+            if (preg_match('/^\d{4}$/', $bln)) {
+                $parts[] = 'Tahun ' . $bln;
+            } elseif (preg_match('/^\d{4}-\d{2}$/', $bln)) {
+                $parts[] = 'Bulan ' . \Carbon\Carbon::parse($bln . '-01')->locale('id')->translatedFormat('F Y');
+            } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $bln)) {
+                $parts[] = 'Tanggal ' . \Carbon\Carbon::parse($bln)->locale('id')->translatedFormat('d F Y');
+            }
+        }
+
+        if ($request->filled('status')) {
+            $parts[] = ucfirst($request->status);
+        }
+
+        return $parts ? implode(' - ', $parts) : 'Semua Data';
     }
 
     // ── Form tambah hutang manual ────────────────────────────────────────────

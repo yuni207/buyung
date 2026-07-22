@@ -58,22 +58,37 @@
         </div>
         <hr style="margin-top:0;">
 
-        {{-- Filter Status --}}
-        <div class="row mb-3">
+        {{-- Filter Status + Bulan --}}
+        <form method="GET" action="/admin/hutang" class="row mb-3">
+            <div class="col-md-3">
+                <input type="month" name="bln" class="form-control form-control-sm"
+                       value="{{ request('bln') }}" placeholder="Filter Bulan">
+            </div>
             <div class="col-md-4">
                 <div class="btn-group w-100" role="group">
-                    <a href="/admin/hutang" class="btn btn-sm {{ !request('status') ? 'btn-primary' : 'btn-outline-primary' }}">
+                    <button type="submit" name="status" value=""
+                        class="btn btn-sm {{ !request('status') ? 'btn-primary' : 'btn-outline-primary' }}">
                         Semua
-                    </a>
-                    <a href="/admin/hutang?status=belum" class="btn btn-sm {{ request('status') === 'belum' ? 'btn-danger' : 'btn-outline-danger' }}">
+                    </button>
+                    <button type="submit" name="status" value="belum"
+                        class="btn btn-sm {{ request('status') === 'belum' ? 'btn-danger' : 'btn-outline-danger' }}">
                         Belum Lunas
-                    </a>
-                    <a href="/admin/hutang?status=lunas" class="btn btn-sm {{ request('status') === 'lunas' ? 'btn-success' : 'btn-outline-success' }}">
+                    </button>
+                    <button type="submit" name="status" value="lunas"
+                        class="btn btn-sm {{ request('status') === 'lunas' ? 'btn-success' : 'btn-outline-success' }}">
                         Lunas
-                    </a>
+                    </button>
                 </div>
             </div>
-        </div>
+            <div class="col-md-2">
+                <a href="/admin/hutang" class="btn btn-secondary btn-sm">Reset</a>
+            </div>
+            <div class="col-md-3 text-right">
+                <a href="/admin/hutang/cetak?status={{ request('status') }}&bln={{ request('bln') }}" class="btn btn-dark btn-sm">
+                    <i class="fa fa-download"></i> Cetak &amp; Download
+                </a>
+            </div>
+        </form>
 
         
         

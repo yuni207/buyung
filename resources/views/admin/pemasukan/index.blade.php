@@ -39,7 +39,7 @@
             <h2 class="text-primary h2"><i class="icon-copy dw dw-list"></i> List Data Pemasukan</h2>
          </div>
          <div class="pull-right">
-            <a href="/admin/pemasukan/cetak/{{$bln}}" target="_blank" class="btn btn-dark btn-sm"><i class="fa fa-print"></i> Cetak Data</a>
+            <a href="/admin/pemasukan/cetak/{{$bln}}" class="btn btn-dark btn-sm"><i class="fa fa-download"></i> Cetak &amp; Download</a>
          </div>
       </div>
       <hr style="margin-top: 0px;">

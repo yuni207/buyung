@@ -41,7 +41,7 @@ class PemasukanController extends Controller
         ]);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream('Laporan Pemasukan ' . $formattedTanggal . '.pdf');
+        return $pdf->download('Laporan Pemasukan ' . $formattedTanggal . '.pdf');
     }
 
     /**

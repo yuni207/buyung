@@ -83,6 +83,11 @@
             <div class="col-md-2">
                 <a href="/admin/piutang" class="btn btn-secondary btn-sm">Reset</a>
             </div>
+            <div class="col-md-3 text-right">
+                <a href="/admin/piutang/cetak?status={{ request('status') }}&bln={{ request('bln') }}" class="btn btn-dark btn-sm">
+                    <i class="fa fa-download"></i> Cetak &amp; Download
+                </a>
+            </div>
         </form>
 
         

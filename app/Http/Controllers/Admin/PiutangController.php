@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PDF;
 
 class PiutangController extends Controller
 {
@@ -45,6 +46,67 @@ class PiutangController extends Controller
         $totalLunas  = $piutang->where('status', 'lunas')->sum('total');
 
         return view('admin.piutang.index', compact('piutang', 'totalSisa', 'totalLunas'));
+    }
+
+    // ── Cetak / download laporan piutang (PDF) ───────────────────────────────
+    public function cetak(Request $request)
+    {
+        $query = DB::table('piutang as p')
+            ->leftJoin('users as u', 'p.id_user', '=', 'u.id')
+            ->select(
+                'p.*',
+                'u.name as nama_kasir',
+                DB::raw('(p.total - p.terbayar) as sisa')
+            );
+
+        if ($request->filled('status')) {
+            $query->where('p.status', $request->status);
+        }
+
+        if ($request->filled('bln')) {
+            $query->where('p.tanggal', 'like', trim($request->bln) . '%');
+        }
+
+        if (Auth::user()->level != '1') {
+            $query->where('p.id_user', Auth::id());
+        }
+
+        $piutang          = $query->orderBy('p.id', 'DESC')->get();
+        $totalSisa        = $piutang->where('status', 'belum')->sum('sisa');
+        $totalLunas       = $piutang->where('status', 'lunas')->sum('total');
+        $totalKeseluruhan = $piutang->sum('total');
+        $label            = $this->buildLabel($request);
+
+        $pdf = PDF::loadview('admin.piutang.cetak', compact('piutang', 'totalSisa', 'totalLunas', 'totalKeseluruhan', 'label'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan Piutang ' . $label . '.pdf');
+    }
+
+    /**
+     * Membuat label periode/status untuk judul laporan berdasarkan
+     * query string yang sedang aktif (bln bisa YYYY / YYYY-MM / YYYY-MM-DD).
+     */
+    private function buildLabel(Request $request): string
+    {
+        $parts = [];
+
+        if ($request->filled('bln')) {
+            $bln = trim($request->bln);
+            if (preg_match('/^\d{4}$/', $bln)) {
+                $parts[] = 'Tahun ' . $bln;
+            } elseif (preg_match('/^\d{4}-\d{2}$/', $bln)) {
+                $parts[] = 'Bulan ' . \Carbon\Carbon::parse($bln . '-01')->locale('id')->translatedFormat('F Y');
+            } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $bln)) {
+                $parts[] = 'Tanggal ' . \Carbon\Carbon::parse($bln)->locale('id')->translatedFormat('d F Y');
+            }
+        }
+
+        if ($request->filled('status')) {
+            $parts[] = ucfirst($request->status);
+        }
+
+        return $parts ? implode(' - ', $parts) : 'Semua Data';
     }
 
     // ── Form tambah piutang ──────────────────────────────────────────────────

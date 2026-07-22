@@ -40,7 +40,7 @@
          </div>
          <div class="pull-right">
             <a href="/admin/pengeluaran/add" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Tambah Data</a>
-            <a href="/admin/pengeluaran/cetak/{{$bln}}" target="_blank" class="btn btn-dark btn-sm"><i class="fa fa-print"></i> Cetak Data</a>
+            <a href="/admin/pengeluaran/cetak/{{$bln}}" class="btn btn-dark btn-sm"><i class="fa fa-download"></i> Cetak &amp; Download</a>
          </div>
       </div>
       <hr style="margin-top: 0px;">

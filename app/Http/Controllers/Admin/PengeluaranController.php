@@ -108,8 +108,8 @@ class PengeluaranController extends Controller
         ]);
         $pdf->setPaper('A4', 'portrait');
 
-        // Return PDF dengan nama yang sudah diformat
-        return $pdf->stream('Laporan Pengeluaran ' . $formattedTanggal . '.pdf');
+        // Return PDF dengan nama yang sudah diformat (langsung terdownload)
+        return $pdf->download('Laporan Pengeluaran ' . $formattedTanggal . '.pdf');
     }
 
     private function applyReportFilter($query, string $filter, string $column = 'tanggal')
